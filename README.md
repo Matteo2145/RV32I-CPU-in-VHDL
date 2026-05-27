@@ -12,5 +12,5 @@ The project has started as a personal work, because I wanted to improve my skill
 -*FP operations* (coming soon)
 
 ## Software
-I use Xilinx Vivad 2022.2
+I'm using Xilinx Vivad 2022.2
 
