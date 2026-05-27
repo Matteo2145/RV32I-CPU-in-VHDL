@@ -1,0 +1,19 @@
+# Block local Vivado tracker logs
+*.log
+*.jou
+*.str
+*.os
+
+# Block automatic IDE build directories
+/.Xil/
+/hd_visual/
+*.cache/
+*.hw/
+*.ip_user_files/
+*.runs/
+*.sim/
+
+# Block final output binaries (optional, unless releasing)
+*.bit
+*.bin
+*.mcs
