@@ -44,7 +44,7 @@ architecture Behavioral of test_PC_memory is
 begin
 
     g1: entity work.PC_memory port map (pc_in => pc_in, load_en =>load_en,
-    clk_pc=>clk_pc, pc=>pc
+    clk_pc=>clk_pc, pc_out=>pc
      );
 
     clk_process: process is
