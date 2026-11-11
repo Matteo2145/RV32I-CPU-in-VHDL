@@ -8,9 +8,9 @@ A RV32I non-pipelined CPU using 5 stages: Instruction Fetch (IF), Instruction De
 >[!NOTE]
 >In the next days (as soon as I get my hands on an FPGA Board) I'll update the repo.
 ## Features
--*RV32I Instruction Set* :EMOJICODE✔️
+-*RV32I Instruction Set* ✔️
 
--*Pipelining* (in progress) :EMOJICODE⏲️
+-*Pipelining* (in progress) ⏲️
 
 -*FP operations* (coming soon) 
 
