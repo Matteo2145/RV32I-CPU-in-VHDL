@@ -35,7 +35,8 @@ entity memory_write_back is
   Port (branch_cond, mem_we, clk: in STD_LOGIC;
         next_pc, alu_result, alu_pre_result, rs2_value: in STD_LOGIC_VECTOR(31 downto 0);
         op_class: in STD_LOGIC_VECTOR(4 downto 0);
-        pc_out,rd_value: out STD_LOGIC_VECTOR(31 downto 0)
+        pc_out,rd_value: out STD_LOGIC_VECTOR(31 downto 0);
+        reg_enable: in std_logic
          );
 end memory_write_back;
 
@@ -53,7 +54,7 @@ architecture Behavioral of memory_write_back is
 begin
 
     DATA_MEMORY: entity work.data_memory port map ( addra=>alu_pre_result(13 downto 2), dina=>rs2_value, wea=>wea,
-                clk=>clk, douta=>mem_out );    
+                clk=>clk, douta=>mem_out, reg_enable=>reg_enable);    
                
     wea<= (mem_we and op_class(1)); -- Store: "00010" one-hot encoding
     

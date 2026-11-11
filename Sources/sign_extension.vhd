@@ -35,7 +35,8 @@ entity sign_extension is
 Port ( 
     instruction: in STD_LOGIC_VECTOR(31 downto 0);
     immediate: out STD_LOGIC_VECTOR(31 downto 0);
-    clk: in STD_LOGIC
+    clk: in STD_LOGIC;
+    reg_enable:in std_logic
 );
 end sign_extension;
 
@@ -79,7 +80,9 @@ begin
     process (clk) is
     begin
     if rising_edge(clk) then
-        immediate<=imm;
+        if reg_enable='1' then
+            immediate<=imm;
+        end if;
     end if;
     end process;
     

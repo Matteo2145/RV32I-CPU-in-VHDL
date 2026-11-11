@@ -36,7 +36,8 @@ entity instruction_execute is
         cond_opcode, alu_opcode: in STD_LOGIC_VECTOR(2 downto 0);
         a,b,f7,clk: in STD_LOGIC;
         branch_cond: out STD_LOGIC;
-        alu_pre_result, alu_result: out STD_LOGIC_VECTOR(31 downto 0)
+        alu_pre_result, alu_result: out STD_LOGIC_VECTOR(31 downto 0);
+        reg_enable:in std_logic
    );
 end instruction_execute;
 
@@ -47,10 +48,10 @@ architecture Behavioral of instruction_execute is
 begin
 
     COMP: entity work.comp port map (rs1_value=>rs1_value, rs2_value=>rs2_value, cond_opcode=>cond_opcode,
-            clk=>clk, branch_cond=>branch_cond);
+            clk=>clk, branch_cond=>branch_cond, reg_enable=>reg_enable);
     ALU: entity work.ALU port map (curr_pc=>curr_pc, rs1_value=>rs1_value, rs2_value=>rs2_value,
             immediate=>immediate, a=>a, b=>b, alu_opcode=>alu_opcode, clk=>clk, alu_result=>alu_result,
-            alu_pre_result=>alu_pre_result, f7=>f7);        
+            alu_pre_result=>alu_pre_result, f7=>f7, reg_enable=>reg_enable);        
 
 
 

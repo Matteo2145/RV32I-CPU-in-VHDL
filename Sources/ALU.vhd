@@ -37,7 +37,8 @@ entity ALU is
     rs1_value, rs2_value, immediate: IN STD_LOGIC_VECTOR(31 downto 0);
     a,b,f7,clk:in STD_LOGIC; --f7 is the 5th bit of function7, used to distinguish between SUB and SLT
     alu_opcode: in STD_LOGIC_VECTOR(2 downto 0);
-    alu_result, alu_pre_result: out STD_LOGIC_VECTOR(31 downto 0)
+    alu_result, alu_pre_result: out STD_LOGIC_VECTOR(31 downto 0);
+    reg_enable: in std_logic
   );
 end ALU;
 
@@ -101,8 +102,8 @@ begin
                 sig_alu_pre_result <= STD_LOGIC_VECTOR(shift_right(unsigned(sig_1), shamt));
                 
             when "1101" => -- SRA / SRAI (Shift Right Arithmetic)
-                   
-                  sig_alu_pre_result <= std_logic_vector(unsigned(shift_right(signed(sig_1), shamt))); --safe conversion  
+                --sig_alu_pre_result <= STD_LOGIC_VECTOR(shift_right(signed(sig_1), shamt));     
+                  sig_alu_pre_result <= std_logic_vector(unsigned(shift_right(signed(sig_1), shamt))); --Conversione sicura  
                 
                 
                 
@@ -115,13 +116,15 @@ begin
        
     end process;
     
-    
+    --alu_pre_result<=sig_alu_pre_result;
     
     process (clk)
     begin
         if rising_edge(clk) then
-            alu_result<=sig_alu_pre_result;
-            alu_pre_result<=sig_alu_pre_result;
+            if reg_enable='1' then
+                alu_result<=sig_alu_pre_result;
+                alu_pre_result<=sig_alu_pre_result;
+            end if;
         end if;
     end process;
     

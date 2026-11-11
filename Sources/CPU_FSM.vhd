@@ -35,7 +35,8 @@ use work.cpu_defs_pkg.all;
 entity CPU_FSM is
   Port ( clk,res: in STD_LOGIC;
         op_class: in STD_LOGIC_VECTOR(4 downto 0);   --OP, LD, ST, B, J  
-        pc_load, rd_write_en, mem_we: out STD_LOGIC
+        pc_load, rd_write_en, mem_we: out STD_LOGIC;
+        reg_enable: in std_logic
         );
 end CPU_FSM;
 
@@ -63,7 +64,8 @@ begin
             if rising_edge(clk) then
                 if res='1' then 
                     present_state<=IFETCH;
-                else present_state<=next_state;
+                elsif reg_enable='1' then
+                     present_state<=next_state;
                 end if;
                 
         end if;        
@@ -78,8 +80,11 @@ begin
         mem_we      <= '0';
         
         case present_state is
-            when  IFETCH => 
-                next_state<=ID; 
+            when  IFETCH => --if(op_class=CLASS_NONE and res='1') then 
+                --next_state<=IFETCH;
+                --else 
+                next_state<=ID; --pc_load<='1';
+                --end if;
             when  ID => next_state<=EX;
                             
             

@@ -35,7 +35,8 @@ entity PC_Memory is
 Port ( pc_in: in STD_LOGIC_VECTOR(11 downto 0);
        load_en, rst: in STD_LOGIC;
        clk_pc: in STD_LOGIC;
-       pc_out: out STD_LOGIC_VECTOR(11 downto 0) :=(others=>'0')
+       pc_out: out STD_LOGIC_VECTOR(11 downto 0) :=(others=>'0');
+       reg_enable: in STD_LOGIC
     );
 end PC_Memory;
 
@@ -45,7 +46,7 @@ architecture Behavioral of PC_Memory is
     
 begin
     
-    pc_out<=pc;
+    
     process(clk_pc) begin
         
         
@@ -53,13 +54,16 @@ begin
         
        if rising_edge(clk_pc) then
             if (rst = '1') then
-                pc <= (others => '0'); -- Synchronous Reset
-            elsif (load_en = '1') then
-                pc <= pc_in;           -- Load the new PC
+                pc <= (others => '0'); -- Reset Sincrono controllato sul fronte di clock
+            elsif (reg_enable= '1') then
+                if (load_en = '1') then
+                    pc <= pc_in;           -- Carica il nuovo PC (es. da ALU o PC+4) solo se abilitato dalla FSM
+                end if;           -- Carica il nuovo PC (es. da ALU o PC+4) solo se abilitato dalla FSM
             end if;
         end if;    
     end process;
-
+    
+    pc_out<=pc;
 
 
 end Behavioral;

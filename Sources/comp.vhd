@@ -35,7 +35,8 @@ entity comp is
   Port (rs1_value, rs2_value: in STD_LOGIC_VECTOR(31 downto 0);
         cond_opcode: in STD_LOGIC_VECTOR(2 downto 0);
         branch_cond: out STD_LOGIC;
-        clk: in STD_LOGIC
+        clk: in STD_LOGIC;
+        reg_enable: in std_logic
         );
 end comp;
 
@@ -83,7 +84,9 @@ begin
     process(clk)
     begin
         if rising_edge(clk) then
-            branch_cond<=sig_branch_cond;
+            if reg_enable='1' then
+                branch_cond<=sig_branch_cond;
+            end if;
         end if;     
     end process;
 

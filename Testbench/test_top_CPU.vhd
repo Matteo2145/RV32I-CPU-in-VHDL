@@ -40,9 +40,14 @@ end test_top_CPU;
 
 architecture Behavioral of test_top_CPU is
 
+
+
     signal clk,rst: STD_LOGIC;
     signal sim_running: boolean :=true; 
-   
+    signal reg_enable: std_logic;
+    
+    constant refresh_bits: integer:=4;
+    
     constant CLASS_J : std_logic_vector(4 downto 0) := "10000";
     constant CLASS_B : std_logic_vector(4 downto 0) := "01000";
     constant CLASS_L : std_logic_vector(4 downto 0) := "00100";
@@ -50,34 +55,52 @@ architecture Behavioral of test_top_CPU is
     constant CLASS_O : std_logic_vector(4 downto 0) := "00001";
     constant CLASS_NONE : std_logic_vector(4 downto 0) := "00000";
     
-    
-begin
-    
-    g1: entity work.top_CPU port map (clk=>clk, rst=>rst);
-
-    clk_process : process is
+    procedure cycles(num : natural) is
     begin
-        while sim_running loop
-            clk <= '0'; wait for 5 ns;
-            clk <= '1'; wait for 5 ns;
-        end loop;
-        wait;
-    end process clk_process;
+      for i in 1 to num loop
+        wait until falling_edge(clk);
+      end loop;
+    end procedure;
     
-    top_CPU: process is
     begin
-        
-        rst<='1';
-        wait for 20 ns;
-        rst<='0';
-        wait for 2000 ns;
-        sim_running<=false;
-        
-        
-        
-    end process top_CPU;
     
-    --Process used to create a log file that contains accesses to Registers and Data Memory
+        g1: entity work.top_CPU generic map (REFRESH_BITS => refresh_bits)  -- <--- Cambia da 17 a 4 solo qui!
+         port map (clk=>clk, rst=>rst, reg_enable=>reg_enable );
+        
+        
+        
+        
+        clk_process : process is
+        begin
+            while sim_running loop
+                clk <= '0'; wait for 5 ns;
+                clk <= '1'; wait for 5 ns;
+            end loop;
+            wait;
+        end process clk_process;
+    
+        top_CPU: process is
+        begin
+            
+            rst<='1';
+            reg_enable<='0';
+            wait for 20 ns;
+            rst<='0';
+            wait for 10 ns;
+            for i in 1 to 100 loop
+                reg_enable<='1'; cycles(1);
+                reg_enable<='0'; cycles(1);
+            end loop;
+            
+            wait;
+            sim_running<=false;
+            
+            
+            
+        end process top_CPU;
+    
+    --Processo per creare un file log contenente gli accessi ai registri e alla data memory
+    
     process (clk)
         file log_file: text open write_mode is "cpu_vivado_trace.log";
         variable line_out: line;
@@ -159,7 +182,7 @@ begin
                               writeline(log_file, line_out);
             end case;
         end if;
-    end process;
+     end process;
     
 
 end Behavioral;

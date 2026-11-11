@@ -37,8 +37,8 @@ entity instruction_memory is
         wea: in STD_LOGIC_VECTOR(0 downto 0);
         dina: in STD_LOGIC_VECTOR(31 downto 0);
         clka: in STD_LOGIC;
-        --rst: in STD_LOGIC;
-        douta: out STD_LOGIC_VECTOR(31 downto 0)
+        douta: out STD_LOGIC_VECTOR(31 downto 0);
+        reg_enable: in STD_LOGIC
     );
 end instruction_memory;
 
@@ -46,18 +46,34 @@ architecture Behavioral of instruction_memory is
     
     type ram_type is array (0 to 1023)of std_logic_vector (31 downto 0);
     signal RAM : ram_type :=(
-    0=>x"00000517", -- auipc   a0, 0x0
-    1=>x"03050513", -- addi    a0, a0, 48
-    2=>x"00000793", -- li      a5, 0
-    3=>x"00500693", -- li      a3, 5
-    4=>x"00052703", -- lw      a4, 0(a0)
-    5=>x"00F70733", -- add     a4, a4, a5
-    6=>x"00178793", -- addi    a5, a5, 1
-    7=>x"00E52023", -- sw      a4, 0(a0)
-    8=>x"00450513", -- addi    a0, a0, 4
-    9=>x"FED796E3", -- bne     a5, a3, pc - 20
-    10=>x"00008067",-- ret
-    
+    0=>x"00000517", --auipc operation
+    1=>x"03050513",
+    2=>x"00000793",
+    3=>x"00500693",
+    4=>x"00052703",
+    5=>x"00F70733",
+    6=>x"00178793",
+    7=>x"00E52023",
+    8=>x"00450513",
+    9=>x"FED796E3", 
+    10=>x"00008067",
+    --0 =>x"00000793",
+    --1=>x"3e800693",
+    --2=>x"00052703",
+    --3=>x"00f70733",
+    --4=>x"00e52023",
+    --5=>x"00178793",
+    --6=>x"00450513",
+    --7=>x"fed796e3",
+    --0=>x"00850713",
+    --1=>x"00052783",
+    --2=>x"00450513",
+    --3=>x"00578793",
+    --4=>x"fef52e23",
+    --5=>x"fee518e3",
+    --6=>x"00a00793",
+    --7=>x"00f5a223",
+    --8=>x"00008067",
     others => (others=>'0'));
     
     --forcing Vicado to use dedicated RAM blocks
@@ -69,12 +85,12 @@ begin
     process(clka) begin
         
             if rising_edge(clka) then
-                --Read first
-                douta <= RAM(to_integer(unsigned (addra )));
-                if (wea="1") then 
-                    RAM(to_integer(unsigned (addra)))<=dina;
+                if reg_enable='1' then
+                    douta <= RAM(to_integer(unsigned (addra )));
+                    if (wea="1") then 
+                        RAM(to_integer(unsigned (addra)))<=dina;
+                    end if;
                 end if;
- 
-        end if;
+            end if;
     end process;  
 end Behavioral;

@@ -38,7 +38,8 @@ entity decode is
         op_class: out STD_LOGIC_VECTOR(4 downto 0);
         alu_opcode, cond_opcode: out STD_LOGIC_VECTOR(2 downto 0);
         a,b: out STD_LOGIC;
-        f7: out STD_LOGIC
+        f7: out STD_LOGIC;
+        reg_enable: in STD_LOGIC
         
     );
 end decode;
@@ -47,7 +48,9 @@ architecture Behavioral of decode is
    signal sign_op_class: STD_LOGIC_VECTOR (4 downto 0);
    signal sign_alu_op, sign_cond_op: STD_LOGIC_VECTOR (2 downto 0);
    signal sign_a, sign_b, sign_f7: STD_LOGIC;
-   
+   --signal function3: STD_LOGIC_VECTOR(2 downto 0);
+    --signal    function7:  STD_LOGIC_VECTOR(6 downto 0);
+    --signal    opcode:  STD_LOGIC_VECTOR(6 downto 0);
  --One-Hot encoding for operation class
    constant CLASS_J : std_logic_vector(4 downto 0) := "10000";
    constant CLASS_B : std_logic_vector(4 downto 0) := "01000";
@@ -61,7 +64,9 @@ architecture Behavioral of decode is
 
 begin
     
-    
+    --function3<=instruction(14 downto 12);
+    --function7<=instruction(31 downto 25);
+    --opcode<=instruction(6 downto 0);
     
     --selection of op_class (O,S,L,B,J) based on the opcode using one-hot encoding
    process(instruction) --combinatory process
@@ -74,7 +79,7 @@ begin
     sign_a<='0'; sign_b<='0';
     
   
-        case instruction(6 downto 2) is -- Direclty use the 5 bits of the opcode
+        case instruction(6 downto 2) is -- Usiamo 5 bit dell'opcode direttamente
             -- BRANCHES (Opcode: 11000xx -> 11000)
             when "11000" =>
                 sign_op_class <= CLASS_B;
@@ -110,8 +115,8 @@ begin
             -- OP-IMM (Opcode: 00100)
             when "00100" =>
                 sign_op_class <= CLASS_O;
-                sign_a <= '1'; -- opcode(4) is 0
-                sign_b <= '0'; -- opcode(5) is 0, but we force the op-imm logic
+                sign_a <= '1'; -- opcode(4) è 0
+                sign_b <= '0'; -- opcode(5) è 0, ma forziamo la logica op-imm
                 sign_cond_op <= "111";
                 sign_alu_op <= instruction(14 downto 12);
                 
@@ -129,7 +134,7 @@ begin
                 sign_b <= '1'; 
                 sign_cond_op <= "111";
                 sign_alu_op <= instruction(14 downto 12);
-                sign_f7 <= instruction(30); -- 5th bit of function 7
+                sign_f7 <= instruction(30); -- Bit 5 di function7
 
             when others =>
                 sign_op_class <= CLASS_NONE;
@@ -142,12 +147,15 @@ begin
     process (clk) 
     begin
         if rising_edge(clk) then
-            op_class<=sign_op_class;
-            alu_opcode<=sign_alu_op;
-            cond_opcode<=sign_cond_op;
-            a<=sign_a;
-            b<=sign_b;
-            f7<=sign_f7; --use this bit in order to distinguish between different operations
+            if reg_enable='1' then   
+                op_class<=sign_op_class;
+                alu_opcode<=sign_alu_op;
+                cond_opcode<=sign_cond_op;
+                a<=sign_a;
+                b<=sign_b;
+                f7<=sign_f7; --use this bit in order to distinguish between different operations
+            end if;
+                
         end if;
     end process;
     

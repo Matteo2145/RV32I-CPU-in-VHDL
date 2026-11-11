@@ -35,7 +35,8 @@ entity data_memory is
   Port (addra: in STD_LOGIC_VECTOR(11 downto 0); --addra=alu_pre_result
         dina: in STD_LOGIC_VECTOR(31 downto 0);
         wea,clk: in STD_LOGIC;
-        douta: out STD_LOGIC_VECTOR(31 downto 0)
+        douta: out STD_LOGIC_VECTOR(31 downto 0);
+        reg_enable: in std_logic
    );
 end data_memory;
 
@@ -43,7 +44,9 @@ architecture Behavioral of data_memory is
     type data_type is array (0 to 4095)of std_logic_vector (31 downto 0);
     signal DATA : data_type :=(
     
-    
+    --12=>x"00000004",
+    --13=>x"00000008",
+    --14=>x"0000000c",
     others => (others=>'0'));
   
     
@@ -56,12 +59,14 @@ begin
     process (clk)
     begin
         if rising_edge(clk) then
-             douta<=(others=>'0');
-            if (wea='1') then
-                DATA(to_integer(unsigned(addra)))<=dina;
-                
-            elsif (wea='0') then
-                douta<=DATA(to_integer(unsigned(addra)));
+            if reg_enable='1' then
+                 douta<=(others=>'0');
+                if (wea='1') then
+                    DATA(to_integer(unsigned(addra)))<=dina;
+                    
+                elsif (wea='0') then
+                    douta<=DATA(to_integer(unsigned(addra)));
+                end if;
             end if;
         end if;
     end process;

@@ -37,7 +37,8 @@ entity instruction_decode is
         rs1_value, rs2_value, immediate: out STD_LOGIC_VECTOR(31 downto 0);
         op_class: out STD_LOGIC_VECTOR(4 downto 0);
         alu_opcode, cond_opcode: out STD_LOGIC_VECTOR(2 downto 0); 
-        a,b,f7: out STD_LOGIC   
+        a,b,f7: out STD_LOGIC;
+        reg_enable: in STD_LOGIC   
   );
 end instruction_decode;
 
@@ -48,11 +49,11 @@ begin
 
     Register_File: entity work.Register_file port map (rd=>instruction(11 downto 7), rs1=>instruction(19 downto 15),
         rs2=>instruction(24 downto 20), we=>rd_write_en, clk=>clk, rd_value=>rd_value,rs1_value=>rs1_value,
-        rs2_value=>rs2_value);
+        rs2_value=>rs2_value, reg_enable=>reg_enable);
     Decode: entity work.decode port map (instruction=>instruction,clk=>clk, op_class=>op_class, alu_opcode=>alu_opcode, a=>a, b=>b, 
-        cond_opcode=>cond_opcode,f7=>f7);
+        cond_opcode=>cond_opcode,f7=>f7, reg_enable=>reg_enable);
         
-    Sign_Extension: entity work.sign_extension port map (instruction=>instruction, immediate=>immediate, clk=>clk);
+    Sign_Extension: entity work.sign_extension port map (instruction=>instruction, immediate=>immediate, clk=>clk, reg_enable=>reg_enable);
     
 
 

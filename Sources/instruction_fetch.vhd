@@ -35,10 +35,10 @@ entity instruction_fetch is
     Port (  pc_in: in STD_LOGIC_VECTOR(11 downto 0);
             clk, pc_load, rst: in STD_LOGIC; --pc_load controlled by FSM
             dina: in STD_LOGIC_VECTOR (31 downto 0);
-            wea: in STD_LOGIC_VECTOR(0 downto 0); --controlled by FSM, enables writing in Instruction Memory
+            wea: in STD_LOGIC_VECTOR(0 downto 0); --controlled by FSM
             next_pc,curr_pc: out STD_LOGIC_VECTOR(11 downto 0);
-            instruction: out STD_LOGIC_VECTOR(31 downto 0)
-            
+            instruction: out STD_LOGIC_VECTOR(31 downto 0);
+            reg_enable: in STD_LOGIC
             );
 end instruction_fetch;
 
@@ -49,10 +49,10 @@ architecture Behavioral of instruction_fetch is
     
 begin
 
-    PC_MEM: entity work.PC_Memory port map (pc_in =>pc_in, pc_out=>pc_out, load_en=>pc_load, clk_pc=>clk, rst=>rst );
+    PC_MEM: entity work.PC_Memory port map (pc_in =>pc_in, pc_out=>pc_out, load_en=>pc_load, clk_pc=>clk, rst=>rst, reg_enable=>reg_enable );
     PC_adder: entity work.pc_adder port map (pc_in_adder=>pc_out, pc_out_adder=>next_pc);
     Instruction_MEM: entity work.instruction_memory port map (addra=>addra, wea=>wea,
-     dina=>dina, clka=>clk, douta=>instruction); 
+     dina=>dina, clka=>clk, douta=>instruction, reg_enable=>reg_enable); --rst=>rst
     curr_pc<=pc_out;
     addra<=pc_out(11 downto 2);
     
